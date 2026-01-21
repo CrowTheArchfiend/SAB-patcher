@@ -1,0 +1,16 @@
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.cache
+*.pdb
+project.lock.json
+project.fragment.lock.json
+*.nuget.props
+*.nuget.targets
+.DS_Store
+Thumbs.db
+*.dll
+*.bak
+*.exe
