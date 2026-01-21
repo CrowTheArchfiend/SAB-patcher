@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Diagnostics;
 using System.Security.Principal;
+using System.Runtime.InteropServices;
 
 // cfg
 string targetDll = "StartAllBackX64.dll";
@@ -41,7 +42,15 @@ if (foundPath == null)
 }
 else
 {
-    if (isRestore) RestartExplorer(() => DllRestore(foundPath)); else RestartExplorer(() => DllPatch(foundPath));
+    try
+    {
+        if (isRestore) UnlockAndExecute(foundPath, () => DllRestore(foundPath));
+        else UnlockAndExecute(foundPath, () => DllPatch(foundPath));
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"{r}FAILED:{c} {ex.Message}");
+    }
 }
 
 WaitForExit();
@@ -97,30 +106,83 @@ void DllRestore(string filePath)
     catch (Exception ex) { Console.WriteLine($"{r}Restore failure: {ex.Message}{c}"); }
 }
 
-void RestartExplorer(Action DllAction)
+void UnlockAndExecute(string filePath, Action DllAction)
 {
-    Console.WriteLine($"{y}[!] Restarting Explorer to unlock DLL...{c}");
-    foreach (var proc in Process.GetProcessesByName("explorer"))
-    {
-        try { proc.Kill(); proc.WaitForExit(); } catch { }
-    }
-    Thread.Sleep(500); // Windows moment
-    DllAction();
-    Console.WriteLine($"{g}[+] Restarting Explorer...{c}");
-    Process.Start("explorer.exe");
-}
+    string sessionKey = Guid.NewGuid().ToString();
+    uint handle;
+    int res = RmStartSession(out handle, 0, sessionKey);
+    if (res != 0) throw new Exception("Could not start Restart Manager session.");
 
-void RestartExplorer(Action DllAction)
-{
-    Console.WriteLine($"{y}[!] Restarting Explorer to unlock DLL...{c}");
-    foreach (var proc in Process.GetProcessesByName("explorer"))
+    try
     {
-        try { proc.Kill(); proc.WaitForExit(); } catch { }
+        string[] resources = { filePath };
+        RmRegisterResources(handle, (uint)resources.Length, resources, 0, IntPtr.Zero, 0, IntPtr.Zero);
+
+        uint pnProcInfoNeeded = 0;
+        uint pnProcInfo = 0;
+        uint rebootReasons;
+
+        RmGetList(handle, out pnProcInfoNeeded, ref pnProcInfo, IntPtr.Zero, out rebootReasons);
+
+        if (pnProcInfoNeeded > 0)
+        {
+            Console.WriteLine($"{y}[!] File is locked by {pnProcInfoNeeded} process(es):{c}");
+
+            // Mem fix
+            pnProcInfo = pnProcInfoNeeded;
+            int structSize = Marshal.SizeOf<RM_PROCESS_INFO>();
+            IntPtr pInfo = Marshal.AllocHGlobal((int)pnProcInfo * structSize);
+            try
+            {
+                if (RmGetList(handle, out pnProcInfoNeeded, ref pnProcInfo, pInfo, out rebootReasons) == 0)
+                {
+                    for (int i = 0; i < pnProcInfo; i++)
+                    {
+                        var info = Marshal.PtrToStructure<RM_PROCESS_INFO>((IntPtr)((long)pInfo + (i * structSize)));
+                        Console.WriteLine($"    -> {r}PID: {info.Process.dwProcessId}{c} | Name: {info.strAppName}");
+                    }
+                }
+            }
+            finally { Marshal.FreeHGlobal(pInfo); }
+
+            Console.WriteLine($"{y}\n[!] Forcing closure of locking processes...{c}");
+
+            // fuck you 
+            string[] targets = { "explorer.exe", "StartAllBackCfg.exe" };
+            foreach (var t in targets)
+            {
+                using var p = Process.Start(new ProcessStartInfo("taskkill", $"/F /IM {t}") { CreateNoWindow = true, UseShellExecute = false });
+                p?.WaitForExit();
+            }
+            Thread.Sleep(1500); // Windows tea time
+        }
+        // Are you dead yet?  Are you dead yet?  Are you dead yet? 
+        int attempts = 0;
+        while (attempts < 10)
+        {
+            try
+            {
+                DllAction();
+                break; // Success!
+            }
+            catch (IOException)
+            {
+                attempts++;
+                if (attempts >= 10) throw;
+                Console.WriteLine($"{y}[Retry {attempts}]{c} File still busy, waiting...");
+                Thread.Sleep(700);
+            }
+        }
     }
-    Thread.Sleep(500); // Windows moment
-    DllAction();
-    Console.WriteLine($"{g}[+] Restarting Explorer...{c}");
-    Process.Start("explorer.exe");
+    finally
+    {
+        RmEndSession(handle);
+        if (Process.GetProcessesByName("explorer").Length == 0)
+        {
+            Console.WriteLine($"{g}[+] Restarting Explorer...{c}");
+            Process.Start("explorer.exe");
+        }
+    }
 }
 
 void WaitForExit()
@@ -128,4 +190,43 @@ void WaitForExit()
     Console.WriteLine($"\n{b}======================================={c}");
     Console.WriteLine("Press any key to close this window...");
     Console.ReadKey(true);
+}
+
+[DllImport("rstrtmgr.dll", CharSet = CharSet.Unicode)]
+static extern int RmStartSession(out uint pSessionHandle, uint dwSessionFlags, string strSessionKey);
+
+[DllImport("rstrtmgr.dll")]
+static extern int RmEndSession(uint dwSessionHandle);
+
+[DllImport("rstrtmgr.dll", CharSet = CharSet.Unicode)]
+static extern int RmRegisterResources(uint dwSessionHandle, uint nFiles, string[] rgsFilenames, uint nApplications, IntPtr rgApplications, uint nServices, IntPtr rgsServiceNames);
+
+[DllImport("rstrtmgr.dll")]
+static extern int RmGetList(uint dwSessionHandle, out uint pnProcInfoNeeded, ref uint pnProcInfo, IntPtr rgAffectedApps, out uint lpdwRebootReasons);
+
+[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+public struct RM_PROCESS_INFO
+{
+    public RM_UNIQUE_PROCESS Process;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+    public string strAppName;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+    public string strServiceShortName;
+    public RM_APP_TYPE ApplicationType;
+    public uint AppStatus;
+    public uint TSSessionId;
+    [MarshalAs(UnmanagedType.Bool)]
+    public bool bRestartable;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct RM_UNIQUE_PROCESS
+{
+    public int dwProcessId;
+    public System.Runtime.InteropServices.ComTypes.FILETIME ProcessStartTime;
+}
+
+public enum RM_APP_TYPE
+{
+    RmUnknownApp = 0, RmMainWindow = 1, RmOtherWindow = 2, RmService = 3, RmExplorer = 4, RmConsole = 5, RmCritical = 1000
 }
