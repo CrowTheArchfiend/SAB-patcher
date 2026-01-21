@@ -18,3 +18,9 @@ When the DLL is found:
  1. Makes a backup with a `.bak` extension (for `--restore`)
  2. Looks for a sequence of bytes and replaces the first 3 with `0x31, 0xC0, 0xC3`.
  3. Exits.
+
+## ⚠️ Disclaimer
+This tool is for educational and personal use only. Modifying binaries may 
+violate the Terms of Service of the software being patched. Use this at your 
+own risk. The author is not responsible for any system instability or 
+data loss.
