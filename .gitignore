@@ -15,3 +15,5 @@ Thumbs.db
 *.bak
 *.exe
 /publish
+/Properties/launchSettings.json
+/Properties/launchSettings.json

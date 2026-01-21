@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "SAB patcher": {
-      "commandName": "Project",
-      "commandLineArgs": "--test"
-    }
-  }
-}
