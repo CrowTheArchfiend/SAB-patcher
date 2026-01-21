@@ -26,6 +26,7 @@ bool isTestMode = args.Contains("--test");
 
 bool isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 
+EnableAnsiColors();
 Console.WriteLine($"{b}-------- Sig-based SAB patcher --------{c}");
 if (!isAdmin) Console.WriteLine($"{y}[!] Warning: Not running as Administrator. Patching may fail.{c}");
 Console.WriteLine($"Mode:          {(isRestore ? "RESTORE" : (isTestMode ? "TEST-PATCH" : "PATCH"))}");
@@ -192,6 +193,29 @@ void WaitForExit()
     Console.ReadKey(true);
 }
 
+
+[DllImport("kernel32.dll", SetLastError = true)]
+static extern IntPtr GetStdHandle(int nStdHandle);
+
+[DllImport("kernel32.dll")]
+static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+
+[DllImport("kernel32.dll")]
+static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+
+const int STD_OUTPUT_HANDLE = -11;
+const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
+
+void EnableAnsiColors()
+{
+    var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (GetConsoleMode(iStdOut, out uint outConsoleMode))
+    {
+        outConsoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+        SetConsoleMode(iStdOut, outConsoleMode);
+    }
+}
+
 [DllImport("rstrtmgr.dll", CharSet = CharSet.Unicode)]
 static extern int RmStartSession(out uint pSessionHandle, uint dwSessionFlags, string strSessionKey);
 
@@ -230,3 +254,4 @@ public enum RM_APP_TYPE
 {
     RmUnknownApp = 0, RmMainWindow = 1, RmOtherWindow = 2, RmService = 3, RmExplorer = 4, RmConsole = 5, RmCritical = 1000
 }
+
