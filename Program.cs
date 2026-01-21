@@ -104,6 +104,7 @@ void RestartExplorer(Action DllAction)
     {
         try { proc.Kill(); proc.WaitForExit(); } catch { }
     }
+    Thread.Sleep(500); // Windows moment
     DllAction();
     Console.WriteLine($"{g}[+] Restarting Explorer...{c}");
     Process.Start("explorer.exe");
