@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Diagnostics;
@@ -93,7 +93,21 @@ void DllRestore(string filePath)
     {
         File.Copy(backupPath, filePath, overwrite: true);
         Console.WriteLine($"{g}Success:{c} Original DLL restored from backup.");
-    } catch (Exception ex) { Console.WriteLine($"{r}Restore failure: {ex.Message}{c}"); }
+    }
+    catch (Exception ex) { Console.WriteLine($"{r}Restore failure: {ex.Message}{c}"); }
+}
+
+void RestartExplorer(Action DllAction)
+{
+    Console.WriteLine($"{y}[!] Restarting Explorer to unlock DLL...{c}");
+    foreach (var proc in Process.GetProcessesByName("explorer"))
+    {
+        try { proc.Kill(); proc.WaitForExit(); } catch { }
+    }
+    Thread.Sleep(500); // Windows moment
+    DllAction();
+    Console.WriteLine($"{g}[+] Restarting Explorer...{c}");
+    Process.Start("explorer.exe");
 }
 
 void RestartExplorer(Action DllAction)
