@@ -29,9 +29,9 @@ bool isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(Windo
 EnableAnsiColors();
 Console.WriteLine($"{b}-------- Sig-based SAB patcher --------{c}");
 if (!isAdmin) Console.WriteLine($"{y}[!] Warning: Not running as Administrator. Patching may fail.{c}");
-Console.WriteLine($"Mode:          {(isRestore ? "RESTORE" : (isTestMode ? "TEST-PATCH" : "PATCH"))}");
+Console.WriteLine($"Mode:             {(isRestore ? "RESTORE" : (isTestMode ? "TEST-PATCH" : "PATCH"))}");
 Console.WriteLine("Last Tested:      21/01/2026");
-Console.WriteLine("on SAB version:   3.9.20\n");
+Console.WriteLine("on SAB version:   3.9.20");
 
 string[] searchPaths = isTestMode ? testPaths : standardPaths;
 string? foundPath = searchPaths.Select(p => Path.Combine(p, targetDll)).FirstOrDefault(File.Exists);
