@@ -10,6 +10,7 @@
 	<PublishAot>true</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
 	  <PublishDir>E:\Visual_Studio\Releases\proj_SAB_TRIAL</PublishDir>
+	  <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
 </Project>
