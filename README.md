@@ -8,6 +8,7 @@ Teeny Tiny C# app that breaks StartAllBackX64.dll, giving you unlimited Free Tri
 
 To verify that it completed successfully, open StartAllBack after _the patcher tells you that it has done its job.._ and go to the "About tab". In there, check if the number of `Trial days left:..` is in the negatives (this only applies if your Free Trial ran out! otherwise its TrustMeBro™ to what the patcher tells you until the trial runs out). You may also restart your computer (can sometimes help with the program loading the DLL).
 Example (in my case):
+
 <img width="768" height="321" alt="{8A591371-6F9E-4B80-9E7B-6DB9A82D4C8A}" src="https://github.com/user-attachments/assets/b4d7fee2-ba00-4c96-bb4c-9c40f3fc5346" />
 
 ## Arguments
