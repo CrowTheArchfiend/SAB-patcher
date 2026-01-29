@@ -6,7 +6,7 @@ Teeny Tiny C# app that breaks StartAllBackX64.dll, giving you unlimited Free Tri
 2. (Optional) Pass in an argument by launching via cmd or powershell.
 3. Done.
 
-To verify that it completed successfully, open StartAllBack after _the patcher tells you that it has done its job.._ and go to the "About tab". In there, check if the number of `Trial days left:..` is in the negatives. You may also restart your computer (can sometimes help with the program loading the DLL).
+To verify that it completed successfully, open StartAllBack after _the patcher tells you that it has done its job.._ and go to the "About tab". In there, check if the number of `Trial days left:..` is in the negatives (this only applies if your Free Trial ran out! otherwise its TrustMeBro™ to what the patcher tells you until the trial runs out). You may also restart your computer (can sometimes help with the program loading the DLL).
 
 ## Arguments
 The program comes with 2 arguemnts you can pass when opening via commandline:
