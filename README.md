@@ -1,6 +1,10 @@
 # SAB-patcher
 Teeny Tiny C# app that breaks StartAllBackX64.dll, giving you unlimited Free Trial days.
-
+Verified supported versions:
+1. 3.9.21
+2. 3.9.20
+3. 3.9.16
+   
 ## How to use
 1. Run the `SAB-patcher.exe` (preferably as Administrator).
 2. (Optional) Pass in an argument by launching via cmd or powershell.
