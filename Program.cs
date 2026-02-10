@@ -100,6 +100,7 @@ void DllPatch(string filePath)
             fileData[patchIndex + i] = patch[i];
 
         File.WriteAllBytes(filePath, fileData);
+        // TODO: Add patch index start & entire signature patch index range in the message
         Console.WriteLine($"{g}Success:{c} Patch applied at 0x{patchIndex:X}.");
     }
     catch (UnauthorizedAccessException) { Console.WriteLine($"{r}Error: Access Denied. Run as Admin!{c}"); }
