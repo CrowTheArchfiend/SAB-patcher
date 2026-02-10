@@ -4,9 +4,11 @@ using System.Linq;
 using System.Diagnostics;
 using System.Security.Principal;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics.Arm;
 
 // cfg
 string targetDll = "StartAllBackX64.dll";
+byte[] ahead = { 0xC3, 0xCC, 0xCC, 0xCC };
 byte[] signature = { 0x48, 0x89, 0x5C, 0x24, 0x18, 0x57, 0x48, 0x83, 0xEC, 0x30, 0x48, 0x8D, 0x4C, 0x24, 0x48 };
 byte[] patch = { 0x31, 0xC0, 0xC3 };
 
@@ -32,6 +34,7 @@ if (!isAdmin) Console.WriteLine($"{y}[!] Warning: Not running as Administrator. 
 Console.WriteLine($"Mode:             {(isRestore ? "RESTORE" : (isTestMode ? "TEST-PATCH" : "PATCH"))}");
 Console.WriteLine("Last Tested:      21/01/2026");
 Console.WriteLine("on SAB version:   3.9.20");
+
 
 string[] searchPaths = isTestMode ? testPaths : standardPaths;
 string? foundPath = searchPaths.Select(p => Path.Combine(p, targetDll)).FirstOrDefault(File.Exists);
@@ -62,7 +65,6 @@ void DllPatch(string filePath)
     {
         string backupPath = filePath + ".bak";
 
-        // Check if backup already exists to not write over the original dll
         if (!File.Exists(backupPath))
         {
             File.Copy(filePath, backupPath);
@@ -74,18 +76,31 @@ void DllPatch(string filePath)
         }
 
         byte[] fileData = File.ReadAllBytes(filePath);
-        int index = fileData.AsSpan().IndexOf(signature);
+        int patchIndex = -1;
 
-        if (index == -1)
+        // Scan the file for the combined pattern
+        for (int i = 0; i <= fileData.Length - (ahead.Length + signature.Length); i++)
         {
-            Console.WriteLine($"{r}Error:{c} Signature not found. (Already patched or wrong version)");
-            return;
+            // Check if 'ahead' matches at current position
+            if (fileData.AsSpan(i, ahead.Length).SequenceEqual(ahead))
+            {
+                // Check if 'signature' follows immediately after
+                if (fileData.AsSpan(i + ahead.Length, signature.Length).SequenceEqual(signature))
+                {
+                    patchIndex = i + ahead.Length;
+                    break; // Found
+                }
+            }
         }
 
-        for (int i = 0; i < patch.Length; i++) fileData[index + i] = patch[i];
+        if (patchIndex == -1) { Console.WriteLine($"{r}Error:{c} Signature not found. (Wrong version or already patched)"); return; }
+
+        // Apply patch at signature (-ahead location)
+        for (int i = 0; i < patch.Length; i++)
+            fileData[patchIndex + i] = patch[i];
 
         File.WriteAllBytes(filePath, fileData);
-        Console.WriteLine($"{g}Success:{c} Patch applied at 0x{index:X}.");
+        Console.WriteLine($"{g}Success:{c} Patch applied at 0x{patchIndex:X}.");
     }
     catch (UnauthorizedAccessException) { Console.WriteLine($"{r}Error: Access Denied. Run as Admin!{c}"); }
     catch (Exception ex) { Console.WriteLine($"{r}Failure: {ex.Message}{c}"); }
