@@ -16,3 +16,5 @@ Thumbs.db
 *.exe
 /publish
 /Properties/launchSettings.json
+/README.md
+/LICENSE
