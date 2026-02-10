@@ -1,6 +1,6 @@
 # SAB-patcher
-Teeny Tiny C# app that breaks StartAllBackX64.dll, giving you unlimited Free Trial days.
-Verified supported versions:
+Teeny Tiny C# app that breaks StartAllBackX64.dll, giving you unlimited Free Trial days.<br/>
+Verified supported versions (others might work too):
 1. 3.9.21
 2. 3.9.20
 3. 3.9.16
@@ -30,7 +30,7 @@ When the DLL is found:
     _It does some other stuff like kill/restarting processes that are preventing it from editing the `StartAllBackX64.dll` so that it actually works.._
 
 ## Troubleshooting
-Last time **I** tested the app was on 21/01/2026 on **StartAllBack version 3.9.20** and **3.9.16**.
+Last time **I** tested the app was on 10/02/2026 on **StartAllBack version 3.9.21**.
 If the app tells you that it couldn't find the `StartAllBackX64.dll`, put the `SAB Patcher.exe` in the same folder as the DLL.
 If the app tells you that it couldn't edit the file (for some reason - usually because it's being used by another process), try using [File Locksmith](https://www.edtittel.com/blog/powertoys-file-locksmith-works-well.html) (or [Powertoys](https://apps.microsoft.com/detail/XP89DCGQ3K6VLD?hl=en-US&gl=US&ocid=pdpshare)) to kill the process that is causing the issues and **restart the patcher**.
 
