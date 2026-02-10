@@ -29,7 +29,8 @@ bool isTestMode = args.Contains("--test");
 bool isAdmin = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 
 EnableAnsiColors();
-Console.WriteLine($"{b}-------- Sig-based SAB patcher --------{c}");
+Console.WriteLine($"{b}===== Sig-based SAB patcher ====={c}");
+Console.WriteLine($"{b}https://github.com/CrowTheArchfiend/SAB-patcher{c}");
 if (!isAdmin) Console.WriteLine($"{y}[!] Warning: Not running as Administrator. Patching may fail.{c}");
 Console.WriteLine($"Mode:             {(isRestore ? "RESTORE" : (isTestMode ? "TEST-PATCH" : "PATCH"))}");
 Console.WriteLine("Last Tested:      10/02/2026");
