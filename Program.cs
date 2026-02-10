@@ -32,8 +32,8 @@ EnableAnsiColors();
 Console.WriteLine($"{b}-------- Sig-based SAB patcher --------{c}");
 if (!isAdmin) Console.WriteLine($"{y}[!] Warning: Not running as Administrator. Patching may fail.{c}");
 Console.WriteLine($"Mode:             {(isRestore ? "RESTORE" : (isTestMode ? "TEST-PATCH" : "PATCH"))}");
-Console.WriteLine("Last Tested:      21/01/2026");
-Console.WriteLine("on SAB version:   3.9.20");
+Console.WriteLine("Last Tested:      10/02/2026");
+Console.WriteLine("on SAB version:   3.9.21");
 
 
 string[] searchPaths = isTestMode ? testPaths : standardPaths;
