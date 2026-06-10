@@ -33,8 +33,8 @@ Console.WriteLine($"{b}===== Sig-based SAB patcher ====={c}");
 Console.WriteLine($"{b}https://github.com/CrowTheArchfiend/SAB-patcher{c}");
 if (!isAdmin) Console.WriteLine($"{y}[!] Warning: Not running as Administrator. Patching may fail.{c}");
 Console.WriteLine($"Mode:             {(isRestore ? "RESTORE" : (isTestMode ? "TEST-PATCH" : "PATCH"))}");
-Console.WriteLine("Last Tested:      10/02/2026");
-Console.WriteLine("on SAB version:   3.9.21");
+Console.WriteLine("Last Tested:      10/06/2026);
+Console.WriteLine("on SAB version:   3.9.23");
 
 
 string[] searchPaths = isTestMode ? testPaths : standardPaths;
