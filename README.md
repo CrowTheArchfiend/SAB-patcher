@@ -1,19 +1,17 @@
 # SAB-patcher
 Teeny Tiny C# app that breaks StartAllBackX64.dll, giving you unlimited Free Trial days.<br/>
 Verified supported versions (others might work too):
-1. 3.9.21
-2. 3.9.20
-3. 3.9.16
+All versions from: `3.9.16` to: `3.9.23`
    
 ## How to use
 1. Run the `SAB-patcher.exe` (preferably as Administrator).
 2. (Optional) Pass in an argument by launching via cmd or powershell.
 3. Done.
 
-To verify that it completed successfully, open StartAllBack after _the patcher tells you that it has done its job.._ and go to the "About tab". In there, check if the number of `Trial days left:..` is in the negatives (this only applies if your Free Trial ran out! otherwise its TrustMeBro™ to what the patcher tells you until the trial runs out). You may also restart your computer (can sometimes help with the program loading the DLL).
-Example (in my case):
+To verify that it completed successfully, open StartAllBack after _the patcher tells you that it has done its job.._ and go to the "About tab". Once your `Trial days left:..` reach `0`, it will simply go into the negatives and you will keep all of the perks. You may also restart your computer (can sometimes help with the program loading the DLL).
+This is how a proper install looks (I'm already way past the 100 day mark):
 
-<img width="768" height="321" alt="{8A591371-6F9E-4B80-9E7B-6DB9A82D4C8A}" src="https://github.com/user-attachments/assets/b4d7fee2-ba00-4c96-bb4c-9c40f3fc5346" />
+<img width="852" height="853" alt="image" src="https://github.com/user-attachments/assets/752c306d-58a6-40fd-a600-32692e246237" />
 
 ## Arguments
 The program comes with 2 arguemnts you can pass when opening via commandline:
